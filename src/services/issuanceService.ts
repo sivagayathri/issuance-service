@@ -4,7 +4,17 @@ import os from "os";
 
 
 const STREAM = process.env.STREAM_NAME || "credential_stream";
-const WORKER_ID = process.env.WORKER_ID || os.hostname();
+
+let WORKER_ID: string;
+
+async function registerWorker() {
+  const id = await redis.incr("worker-counter");
+  WORKER_ID = `worker-${id}`;
+  console.log(`Registered as ${WORKER_ID}`);
+}
+
+await registerWorker(); 
+
 
 export async function issueCredential(name: string, email: string, credentialid: string) {
   if (!name || !email || !credentialid) throw new Error("Missing fields");
