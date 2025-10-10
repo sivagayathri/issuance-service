@@ -1,26 +1,30 @@
-# Use official Node 20 alpine image
-FROM node:20-alpine
-
-# Set working directory
+# Stage 1: Build
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
-# Install only production dependencies, ignore dev deps (like Vitest)
-RUN npm ci --omit=dev --legacy-peer-deps
+# Install all dependencies including dev (typescript)
+RUN npm ci --legacy-peer-deps
 
-# Copy rest of the source code
+# Copy source
 COPY . .
 
 # Compile TypeScript
 RUN npm run build
 
-# Use a non-root user
+# Stage 2: Production image
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy only production dependencies
+COPY package*.json ./
+RUN npm ci --omit=dev --legacy-peer-deps
+
+# Copy build output from builder
+COPY --from=builder /app/dist ./dist
+
 USER node
-
-# Expose port
 EXPOSE 4000
-
-# Run the compiled app
 CMD ["node", "dist/index.js"]
