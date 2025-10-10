@@ -36,3 +36,17 @@ issuance-service/
 ├─ package.json
 ├─ tsconfig.json
 └─ README.md
+
+
+run service
+--------------
+- npm run start    // start service
+- npx vitest run    // run vitest test
+
+
+
+Author
+------------------------------------
+Name: Sivagayathri k
+Email: shivagayathrik2000@gmail.com
+Mobile: 8248362498
